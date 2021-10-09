@@ -1,10 +1,7 @@
-from django.shortcuts import render
-import json
-from django.views import View
+from django.contrib.auth.models import User
 from .models import Costumer
-from django.http import JsonResponse, HttpResponseRedirect
-from django.forms import model_to_dict
-from .serializers import CostumerSerializer
+from django.http import HttpResponseRedirect
+from .serializers import CostumerSerializer,USerSerializerModelView
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -19,10 +16,61 @@ from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import api_view,action
+
 
 
 # Create your views here.
+#class view for user
+# Class view for costumer list
+class UserView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = USerSerializerModelView
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self,request):
+        serializer = USerSerializerModelView(data = request.data)
+        if serializer.is_valid():
+            user = serializer.save(serializer.validated_data)
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+    def list(self, request):
+        queryset = User.objects.all()
+        serializer = USerSerializerModelView(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = User.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = USerSerializerModelView(user)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = USerSerializerModelView(data = request.data)
+        if serializer.is_valid():
+            serializer.save(serializer.validated_data)
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk=None):
+        queryset = User.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = USerSerializerModelView(user, data=request.data)
+        if serializer.is_valid():
+            serializer.update(serializer.validated_data,pk)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    def destroy(self, request, pk=None):
+        queryset = User.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT) 
+
+
 
 # Class view for costumer list
 class CostumerView(viewsets.ModelViewSet):
@@ -60,9 +108,13 @@ class CostumerView(viewsets.ModelViewSet):
     def update(self, request, pk=None):
         queryset = Costumer.objects.all()
         costumer = get_object_or_404(queryset, pk=pk)
+        if len(self.request.data['photo']) == 0 :
+            photo = costumer.photo
+        else:
+            photo = self.request.data['photo']
         serializer = CostumerSerializer(costumer, data=request.data)
         if serializer.is_valid():
-            serializer.save(lastupdateuser=self.request.user)
+            serializer.save(lastupdateuser=self.request.user, photo = photo)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
