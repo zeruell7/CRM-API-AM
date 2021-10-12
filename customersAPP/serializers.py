@@ -28,6 +28,7 @@ class USerSerializerModelView(serializers.ModelSerializer):
             'password',
             'is_staff'
         )
+        extra_kwargs = {'password':{'write_only':True}}
 
     def save(self, validated_data):
         instance = User()

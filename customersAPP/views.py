@@ -21,7 +21,6 @@ from rest_framework.response import Response
 
 # Create your views here.
 #class view for user
-# Class view for costumer list
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = USerSerializerModelView
