@@ -41,4 +41,6 @@ How to use the App
 Special Features
 Access Control: there is an access control using tokens, you have to loggin if you want to manage users or costumers
 
+NOTE: I Leave a basic view in the root project folder: ScreenAPP.png
+
 
