@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # Create your models here.
-
+# this is the class to manage the costumer atributes, this class generate a model over a DB system
 class Costumer(models.Model):
      name = models.CharField(max_length = 50, null=False)
      surname = models.CharField(max_length = 50, null=False)

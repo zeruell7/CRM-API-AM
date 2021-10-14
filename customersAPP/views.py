@@ -21,11 +21,16 @@ from rest_framework.response import Response
 
 # Create your views here.
 #class view for user
+# This class defines the views/actions over object costumer
 class UserView(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = USerSerializerModelView
-    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all() # print the list of costumer
+    serializer_class = USerSerializerModelView 
+    permission_classes = (IsAuthenticated,) # security validation; the solution uses token
     
+    #method to create a user
+    #parameters:
+    # - self: object self
+    # - request: petition data generated to create a user
     def post(self,request):
         serializer = USerSerializerModelView(data = request.data)
         if serializer.is_valid():
@@ -33,26 +38,29 @@ class UserView(viewsets.ModelViewSet):
             return Response(serializer.data, status = status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-
+    
+    # method to list all users
     def list(self, request):
         queryset = User.objects.all()
         serializer = USerSerializerModelView(queryset, many=True)
         return Response(serializer.data)
 
+    #method to query the user details
+    #parameters:
+    # - self: object self
+    # - request: petition data generated to show user details
+    # - pk: wanted user id key
     def retrieve(self, request, pk=None):
         queryset = User.objects.all()
         user = get_object_or_404(queryset, pk=pk)
         serializer = USerSerializerModelView(user)
         return Response(serializer.data)
-
-    def create(self, request):
-        serializer = USerSerializerModelView(data = request.data)
-        if serializer.is_valid():
-            serializer.save(serializer.validated_data)
-            return Response(serializer.data, status = status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-
+    
+    #method to update a user
+    #parameters:
+    # - self: object self
+    # - request: petition data generated to update a user
+    # - pk: user id key to be updated
     def update(self, request, pk=None):
         queryset = User.objects.all()
         user = get_object_or_404(queryset, pk=pk)
@@ -62,7 +70,11 @@ class UserView(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-
+#method to delete a user
+    #parameters:
+    # - self: object self
+    # - request: petition data generated to delete a user
+    # - pk: user id key to be deleted
     def destroy(self, request, pk=None):
         queryset = User.objects.all()
         user = get_object_or_404(queryset, pk=pk)
@@ -90,20 +102,22 @@ class CostumerView(viewsets.ModelViewSet):
         serializer = CostumerSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    #method to query a costumer
+    #parameters:
+    # - self: object self
+    # - request: petition data generated to query a costumer
+    # - pk: costumer id key to be consulted
     def retrieve(self, request, pk=None):
         queryset = Costumer.objects.all()
         costumer = get_object_or_404(queryset, pk=pk)
         serializer = CostumerSerializer(costumer)
         return Response(serializer.data)
 
-    def create(self, request):
-        serializer = CostumerSerializer(data = request.data)
-        if serializer.is_valid():
-            costumer = serializer.save(lastupdateuser=self.request.user,creatoruser=self.request.user)
-            return Response(serializer.data, status = status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-
+    #method to update a costumer
+    #parameters:
+    # - self: object self
+    # - request: petition data generated to update a costumer
+    # - pk: costumer id key to be updated
     def update(self, request, pk=None):
         queryset = Costumer.objects.all()
         costumer = get_object_or_404(queryset, pk=pk)
@@ -117,7 +131,11 @@ class CostumerView(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-
+    #method to delete a costumer
+    #parameters:
+    # - self: object self
+    # - request: petition data generated to delete a costumer
+    # - pk: costumer id key to be deleted
     def destroy(self, request, pk=None):
         queryset = Costumer.objects.all()
         costumer = get_object_or_404(queryset, pk=pk)
